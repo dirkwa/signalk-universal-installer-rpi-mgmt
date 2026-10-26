@@ -7,6 +7,9 @@ const POLL_MS = 3000
 // A restart that never takes the server down in this time has finished
 // before the first check could see it gone.
 const RESTART_SETTLE_MS = 30_000
+// A reboot takes the server down within seconds; one still up after this
+// never started.
+const REBOOT_GIVE_UP_MS = 120_000
 
 export function ActionDialog() {
   const action = useStore((s) => s.action)
@@ -95,6 +98,7 @@ async function start(
 
 function Waiting({ action, sent }: { action: PowerAction; sent: boolean }) {
   const [seconds, setSeconds] = useState(0)
+  const setAction = useStore((s) => s.setAction)
 
   useEffect(() => {
     if (!sent) return
@@ -106,7 +110,17 @@ function Waiting({ action, sent }: { action: PowerAction; sent: boolean }) {
       void serverIsUp().then((up) => {
         if (stopped) return
         if (!up) sawDown = true
-        const settled = action === 'restart' && Date.now() - startedAt > RESTART_SETTLE_MS
+        const elapsed = Date.now() - startedAt
+        if (up && !sawDown && action === 'reboot' && elapsed > REBOOT_GIVE_UP_MS) {
+          stopped = true
+          setAction({
+            phase: 'error',
+            action,
+            message: 'The computer did not restart. Signal K is still running.'
+          })
+          return
+        }
+        const settled = action === 'restart' && elapsed > RESTART_SETTLE_MS
         if (up && (sawDown || settled)) {
           stopped = true
           window.location.reload()
@@ -117,7 +131,7 @@ function Waiting({ action, sent }: { action: PowerAction; sent: boolean }) {
       stopped = true
       clearInterval(timer)
     }
-  }, [action, sent])
+  }, [action, sent, setAction])
 
   return (
     <Overlay>
