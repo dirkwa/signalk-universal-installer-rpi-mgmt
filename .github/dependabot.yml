@@ -2,6 +2,10 @@ version: 2
 updates:
   - package-ecosystem: npm
     directory: '/'
+    # build(deps) passes the release gate, build(deps-dev) does not.
+    commit-message:
+      prefix: build
+      include: scope
     schedule:
       interval: weekly
     groups:
@@ -14,6 +18,9 @@ updates:
 
   - package-ecosystem: github-actions
     directory: '/'
+    commit-message:
+      prefix: ci
+      include: scope
     schedule:
       interval: weekly
     groups:

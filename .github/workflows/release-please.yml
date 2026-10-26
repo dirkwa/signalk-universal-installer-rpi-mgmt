@@ -6,10 +6,6 @@ on:
   # Run by hand to refresh the release PR, e.g. after relabelling merged PRs.
   workflow_dispatch:
 
-concurrency:
-  group: release-please
-  cancel-in-progress: false
-
 permissions: {}
 
 jobs:
@@ -35,6 +31,11 @@ jobs:
   release-please:
     needs: gate
     if: ${{ needs.gate.outputs.releasable == 'true' }}
+    # On the job, not the workflow: GitHub keeps one pending run per group, so
+    # a gated-out push must not replace the queued run of a releasable one.
+    concurrency:
+      group: ${{ needs.gate.outputs.releasable == 'true' && 'release-please' || format('release-please-{0}', github.run_id) }}
+      cancel-in-progress: false
     runs-on: ubuntu-24.04
     permissions:
       contents: write
