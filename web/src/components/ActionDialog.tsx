@@ -4,6 +4,9 @@ import { useStore } from '../store.js'
 import { ACTION_TEXT } from './PowerPanel.js'
 
 const POLL_MS = 3000
+// A tick this late means the browser slept, and the server may have gone
+// down and come back unseen.
+const MISSED_POLL_MS = 3 * POLL_MS
 // A restart that never takes the server down in this time has finished
 // before the first check could see it gone.
 const RESTART_SETTLE_MS = 30_000
@@ -105,8 +108,12 @@ function Waiting({ action, sent }: { action: PowerAction; sent: boolean }) {
     const startedAt = Date.now()
     let sawDown = false
     let stopped = false
+    let lastTick = startedAt
     const timer = setInterval(() => {
-      setSeconds(Math.round((Date.now() - startedAt) / 1000))
+      const now = Date.now()
+      if (now - lastTick > MISSED_POLL_MS) sawDown = true
+      lastTick = now
+      setSeconds(Math.round((now - startedAt) / 1000))
       void serverIsUp().then((up) => {
         if (stopped) return
         if (!up) sawDown = true
