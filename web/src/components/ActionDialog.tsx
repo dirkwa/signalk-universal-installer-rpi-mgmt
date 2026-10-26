@@ -4,8 +4,8 @@ import { useStore } from '../store.js'
 import { ACTION_TEXT } from './PowerPanel.js'
 
 const POLL_MS = 3000
-// A tick this late means the browser slept, and the server may have gone
-// down and come back unseen.
+// A tick this late means the browser slept: the server may have gone down
+// and come back unseen, so the page can no longer say whether it rebooted.
 const MISSED_POLL_MS = 3 * POLL_MS
 // A restart that never takes the server down in this time has finished
 // before the first check could see it gone.
@@ -83,6 +83,38 @@ export function ActionDialog() {
     )
   }
 
+  if (action.phase === 'unconfirmed') {
+    return (
+      <Overlay>
+        <h2>Reboot not confirmed</h2>
+        <p>
+          This page was asleep, so it could not see whether the computer restarted. Signal K is
+          answering now.
+        </p>
+        <div className="dialog-buttons">
+          <button
+            type="button"
+            className="dialog-button"
+            onClick={() => {
+              setAction({ phase: 'idle' })
+            }}
+          >
+            Close
+          </button>
+          <button
+            type="button"
+            className="dialog-button blue"
+            onClick={() => {
+              window.location.reload()
+            }}
+          >
+            Reload
+          </button>
+        </div>
+      </Overlay>
+    )
+  }
+
   return <Waiting action={action.action} sent={action.phase === 'waiting'} />
 }
 
@@ -108,10 +140,11 @@ function Waiting({ action, sent }: { action: PowerAction; sent: boolean }) {
     const startedAt = Date.now()
     let sawDown = false
     let stopped = false
+    let missedPoll = false
     let lastTick = startedAt
     const timer = setInterval(() => {
       const now = Date.now()
-      if (now - lastTick > MISSED_POLL_MS) sawDown = true
+      if (now - lastTick > MISSED_POLL_MS) missedPoll = true
       lastTick = now
       setSeconds(Math.round((now - startedAt) / 1000))
       void serverIsUp().then((up) => {
@@ -120,11 +153,15 @@ function Waiting({ action, sent }: { action: PowerAction; sent: boolean }) {
         const elapsed = Date.now() - startedAt
         if (up && !sawDown && action === 'reboot' && elapsed > REBOOT_GIVE_UP_MS) {
           stopped = true
-          setAction({
-            phase: 'error',
-            action,
-            message: 'The computer did not restart. Signal K is still running.'
-          })
+          setAction(
+            missedPoll
+              ? { phase: 'unconfirmed', action }
+              : {
+                  phase: 'error',
+                  action,
+                  message: 'The computer did not restart. Signal K is still running.'
+                }
+          )
           return
         }
         const settled = action === 'restart' && elapsed > RESTART_SETTLE_MS

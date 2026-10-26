@@ -13,6 +13,7 @@ export type ActionPhase =
   | { phase: 'waiting'; action: PowerAction }
   | { phase: 'off' }
   | { phase: 'error'; action: PowerAction; message: string }
+  | { phase: 'unconfirmed'; action: PowerAction }
 
 // The live chart samples at most this often, whatever rate the stats plugin
 // publishes at.
