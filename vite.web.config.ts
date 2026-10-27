@@ -9,8 +9,8 @@ export default defineConfig({
   root: 'web',
   // Relative asset URLs: the server mounts the webapp under its package name.
   base: './',
-  // The icon lives at the package root, where the App Store reads it; copy it
-  // next to index.html rather than keeping a second copy.
+  // Copies the icon next to index.html, where both the App Store's appIcon
+  // and the page's favicon read it.
   publicDir: '../static',
   build: { outDir: '../public', emptyOutDir: true },
   plugins: [
