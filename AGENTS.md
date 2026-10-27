@@ -31,8 +31,9 @@ the History API), and buttons to restart Signal K, reboot or power off.
 - Schema defaults are not applied at runtime; there is no configuration.
 - No install scripts; the only runtime dependency is `typebox`. The webapp's
   libraries are devDependencies, bundled into `public/`.
-- `appIcon` resolves against `public/`; `static/icon.svg` links the root icon
-  so Vite copies it there.
+- `appIcon` resolves against `public/`; Vite copies `static/icon.svg` there.
+  Keep it a real file, not a symlink: a Windows checkout turns a symlink into
+  a text file holding its target, and a release packed from there ships that.
 
 ## Commands
 
