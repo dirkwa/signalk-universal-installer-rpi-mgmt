@@ -11,7 +11,7 @@ A page for the computer that runs your Signal K server: how hot it is, how busy,
 - **Power buttons.** Restart Signal K, reboot the computer, or power it off before you leave the boat. Each asks first, and after a restart or reboot the page reconnects by itself.
 - **Status.** CPU temperature (amber from 70 °C, red from 80 °C, where a Raspberry Pi starts to slow itself down), CPU load per core, clock speed, memory, storage (amber from 80 %, red from 90 % full), and how long the computer has been running.
 - **Power supply warnings.** On a Raspberry Pi, a banner tells you when the supply voltage is too low or the CPU is slowing down because it is too hot. A weak supply is a common cause of corrupted SD cards on boats. These need signalk-rpi-stats to reach the Pi's `vcgencmd`, which a Signal K server running in a container usually cannot.
-- **History.** CPU temperature, CPU load, memory and storage as charts. With a history plugin (for example signalk-to-influxdb2 or signalk-questdb) you can look back 1 hour, 24 hours or 7 days; without one the page charts the last 30 minutes since you opened it.
+- **History.** CPU temperature, CPU load, memory and storage as charts. With the history plugin signalk-questdb you can look back 1 hour, 24 hours or 7 days; without one the page charts the last 30 minutes since you opened it.
 
 Despite the name it works on any Linux computer. The power-supply warnings and the core voltage are only available on a Raspberry Pi, and only where `vcgencmd` is reachable.
 
