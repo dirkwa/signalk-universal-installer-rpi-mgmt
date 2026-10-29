@@ -1,6 +1,6 @@
 {
   "name": "signalk-universal-installer-rpi-mgmt",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "RPI Manager: shows the computer's health and history, and restarts Signal K, reboots or powers off the computer, for Signal K Universal Installer setups",
   "author": "Dirk Wahrheit",
   "main": "plugin/index.js",
