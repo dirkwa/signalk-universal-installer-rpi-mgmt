@@ -55,8 +55,11 @@ export function Charts({ prefix }: { prefix: string }) {
       </div>
       {!hasHistory && (
         <p className="hint">
-          Showing the last 30 minutes since this page opened. Install a history plugin (for example
-          signalk-to-influxdb2 or signalk-questdb) to see hours and days.
+          Showing the last 30 minutes since this page opened. Install the history plugin{' '}
+          <a href="/admin/#/apps/store/plugin/signalk-questdb" target="_top">
+            QuestDB
+          </a>{' '}
+          to see hours and days.
         </p>
       )}
       {historyError && <p className="hint error">Could not load the history: {historyError}</p>}
