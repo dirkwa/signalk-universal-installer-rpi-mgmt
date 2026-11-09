@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   test:
-    uses: SignalK/signalk-server/.github/workflows/plugin-ci.yml@0c8c59f6f948a67ca0df3e6a11bc7ae89a374543 # master
+    uses: SignalK/signalk-server/.github/workflows/plugin-ci.yml@b6f8adf6609525b31eac390fdd867b88c09590b4 # master
     with:
       enable-signalk-integration: true
       format-check-command: npm run ci-lint
